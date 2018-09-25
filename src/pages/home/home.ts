@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { NavController, BarcodeScannerOptions, BarcodeScanResult } from 'ionic-angular';
+import { BarcodeScanner, BarcodeScannerOptions, BarcodeScanResult } from '@ionic-native/barcode-scanner';
 
-import { AngularFireAuth } from 'angularfire2/auth';
+//import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFireDatabase } from 'angularfire2/database';
 
 import { ToastController } from 'ionic-angular';
@@ -10,14 +10,15 @@ import { ToastController } from 'ionic-angular';
   selector: 'page-home',
   templateUrl: 'home.html'
 })
+
 export class HomePage {
 
   result: BarcodeScanResult;
-  userScord = <any>;
-  userName = <any>;
+  userScord: number;
+  userName: any;
 
-  constructor(public navCtrl: NavController, private barcode: BarcodeScanner, private afDatabase: AngularFireDatabase
-  , private afAuth: AngularFireAuth, public toast: ToastController) {
+  constructor(private barcode: BarcodeScanner, private afDatabase: AngularFireDatabase
+  , public toast: ToastController) {
   }
 
   async scanQRcode(){
@@ -30,7 +31,7 @@ export class HomePage {
 
       this.result = await this.barcode.scan(options);
 
-      this.afDatabase.object('userProfile/' + data.uid + '/').snapshotChanges().subscribe(
+      this.afDatabase.object('userProfile/' + this.result.text + '/').snapshotChanges().subscribe(
       (action)=>{
         if(action.payload.val())
         {
@@ -43,32 +44,29 @@ export class HomePage {
         {
           console.log("None Data");
         }
+        });
 
-        if(this.result == this.userName) //find the user
+        if(this.userScord => 8)//after eight times purchase, clear the score to zero
         {
-          if(this.userScord > 8)//after eight times purchase, clear the score to zero
-          {
-            this.userScord = 0;
-            //save the userScore to specific user base on the username
-            let path= 'userProfile'+'/'+ this.userName;
-            this.afDatabase.object(path).set(this.userScord);
-          }
-          else
-          {
-            this.userScord = this.userScord + 1;
-            //save the userScore to specific user base on the username
-            let path= 'userProfile'+'/'+ this.userName;
-            this.afDatabase.object(path).set(this.userScord);
-          }
-
+          this.userScord = 0;
+          //save the userScore to specific user base on the username
+          let path= 'userProfile'+'/'+ this.result.text + '/userScord';
+          this.afDatabase.object(path).set(this.userScord);
+        }
+        else
+        {
+          this.userScord = this.userScord + 1;
+          //save the userScore to specific user base on the username
+          let path= 'userProfile'+'/'+ this.result.text + '/userScord';
+          this.afDatabase.object(path).set(this.userScord);
         }
 
-      this.toast.create({
-        message: 'Success Scan user: '+ this.profileInfo.username + "!",
-        duration: 3000
-      }).present();
-      });
-    }
+
+        this.toast.create({
+          message: 'Success Scan user: '+ this.userName + "!",
+          duration: 3000
+        }).present();
+
 
     }
     catch(error)
