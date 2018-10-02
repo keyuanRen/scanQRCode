@@ -48,17 +48,17 @@ export class HomePage {
         }
         });
 
-        if(this.userScord = 8)//after eight times purchase, clear the score to zero
+        if(this.userScord == 8)//after eight times purchase, clear the score to zero
         {
           this.userScord = 0;
-          this.reminer = true;
+          this.reminder = true;
           //save the userScore to specific user base on the username
           let path= 'userProfile'+'/'+ this.result.text + '/userScord';
           this.afDatabase.object(path).set(this.userScord);
         }
         else
         {
-          this.reminer = false;
+          this.reminder = false;
           this.userScord = this.userScord + 1;
           //save the userScore to specific user base on the username
           let path= 'userProfile'+'/'+ this.result.text + '/userScord';
