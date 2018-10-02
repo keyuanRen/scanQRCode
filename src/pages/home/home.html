@@ -9,7 +9,8 @@
 <ion-content padding>
   <ion-card *ngIf = "result">
     <ion-card-content>
-      <p>Text: {{result.text}}</p>
+      <p>Successful Scaned user: {{userName}}</p>
+      <p *ngIf = "reminder">User can get a Reward !!</p>
     </ion-card-content>
   </ion-card>
 
